@@ -1,0 +1,72 @@
+//1.TAKE ENVIRONMENT AS CANCUM
+//2.Create file in contract named Student.sol
+//3. copy paste code
+//4.ESTIMATED GAS
+
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.0 <=0.9.0;
+
+contract StudentRegister {
+    address public owner;
+    mapping(address => student) students;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner, "Not the contract owner");
+        _;
+    }
+
+    struct student {
+        address studentId;
+        string name;
+        string course;
+        uint256 mark1;
+        uint256 mark2;
+        uint256 mark3;
+        uint256 totalMarks;
+        uint256 percentage;
+        bool isExist;
+    }
+
+    // Example input for register function:
+    // studentId = 0xAbC1234567890abcdef1234567890abcdef1234
+    // name = "Alice"
+    // course = "Physics"
+    // mark1 = 75
+    // mark2 = 80
+    // mark3 = 85
+
+    function register(
+        address studentId,
+        string memory name,
+        string memory course,
+        uint256 mark1,
+        uint256 mark2,
+        uint256 mark3
+    ) public onlyOwner {
+        require(!students[studentId].isExist, "Student already registered");
+
+        uint256 totalMarks = mark1 + mark2 + mark3;
+        uint256 percentage = totalMarks / 3;
+
+        students[studentId] = student(studentId, name, course, mark1, mark2, mark3, totalMarks, percentage, true);
+    }
+
+    function getStudentDetails(address studentId)
+        public
+        view
+        returns (
+            address,
+            string memory,
+            string memory,
+            uint256,
+            uint256
+        )
+    {
+        student memory s = students[studentId];
+        return (s.studentId, s.name, s.course, s.totalMarks, s.percentage);
+    }
+}
